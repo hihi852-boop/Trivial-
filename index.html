@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>福岡 7 日行程助手 2026</title>
+    <style>
+        :root {
+            --jr-blue: #005696;
+            --kumamon-red: #e60012;
+            --bg-gray: #f4f7f6;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-gray);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: var(--jr-blue);
+            font-size: 24px;
+        }
+        .day-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 6px solid var(--jr-blue);
+        }
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--jr-blue);
+        }
+        .date-input {
+            border: none;
+            font-size: 14px;
+            color: #666;
+            background: transparent;
+        }
+        textarea {
+            width: 100%;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+        .save-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--jr-blue);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 100;
+        }
+        .tips {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🇯🇵 福岡 2026 行程表</h1>
+    <p style="text-align: center; font-size: 14px;">點擊文字框即可修改，會自動儲存落電話</p>
+
+    <div id="itinerary-container"></div>
+
+    <button class="save-btn" onclick="saveItinerary()">💾 手動儲存</button>
+
+    <script>
+        const initialData = [
+            { day: "Day 1", date: "28/5 (四)", activity: "18:30 到博多 🛬\n前往美野島民宿 Check-in\n民宿附近搵拉麵/居酒屋 (Hea)" },
+            { day: "Day 2", date: "29/5 (五)", activity: "由布院一日遊 (JR Pass) ♨️\n傍晚返博多玩柏青哥/天神行街\n*記得提早劃位由布院之森" },
+            { day: "Day 3", date: "30/5 (六)", activity: "糸島一日遊 (Itoshima) 🌊\n櫻井二見浦白色鳥居打卡\n租電動單車環島" },
+            { day: "Day 4", date: "31/5 (日)", activity: "海之中道公園 (睇羊駝) 🦙\n福岡塔夜晚睇夜景 🗼\n(有時間再去大濠公園)" },
+            { day: "Day 5", date: "1/6 (一)", activity: "北九州 Outlet Shopping 🛍️\n若松賽艇場 (睇 1800 賽車) 🚤\n皿倉山頂睇新日本三大夜景 🌃" },
+            { day: "Day 6", date: "2/6 (二)", activity: "熊本快閃行街 (搭新幹線) 🐻\n下通商店街藥妝掃貨\n傍晚 LaLaport 看高達 + LOPIA 超市" },
+            { day: "Day 7", date: "3/6 (三)", activity: "最後衝刺買手信 🎁\n前往機場 (11:00 前到)" }
+        ];
+
+        function loadItinerary() {
+            const container = document.getElementById('itinerary-container');
+            const savedData = JSON.parse(localStorage.getItem('fukuoka2026')) || initialData;
+            
+            container.innerHTML = '';
+            savedData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                card.innerHTML = `
+                    <div class="day-header">
+                        <span>${item.day}</span>
+                        <input type="text" class="date-input" value="${item.date}" id="date-${index}">
+                    </div>
+                    <textarea id="act-${index}" rows="4" oninput="autoSave()">${item.activity}</textarea>
+                    <div class="tips">JR Pass 適用範圍內</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function saveItinerary() {
+            const data = [];
+            const cards = document.querySelectorAll('.day-card');
+            cards.forEach((card, index) => {
+                data.push({
+                    day: card.querySelector('.day-header span').innerText,
+                    date: document.getElementById(`date-${index}`).value,
+                    activity: document.getElementById(`act-${index}`).value
+                });
+            });
+            localStorage.setItem('fukuoka2026', JSON.stringify(data));
+            alert('行程已儲存！');
+        }
+
+        function autoSave() {
+            // 每 2 秒自動儲存一次
+            const data = [];
+            const cards = document.querySelectorAll('.day-card');
+            cards.forEach((card, index) => {
+                data.push({
+                    day: card.querySelector('.day-header span').innerText,
+                    date: document.getElementById(`date-${index}`).value,
+                    activity: document.getElementById(`act-${index}`).value
+                });
+            });
+            localStorage.setItem('fukuoka2026', JSON.stringify(data));
+        }
+
+        loadItinerary();
+    </script>
+</body>
+</html>
